@@ -9,7 +9,7 @@
 * No dependencies
 * Super lightweight
 * Dead **simple setup process**
-* Authentification support
+* Authentication support
 
 ## Setup
 
@@ -78,7 +78,7 @@ $ curl -X POST yourdomain.com:8555/my-super-safe-token
 
 ## How it works
 
-`docker-hook` uses `BaseHTTPRequestHandler` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
+`docker-hook` uses `BaseHTTPRequestHandler` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentication](#auth-token) was successful.
 
 ## Caveat
 
