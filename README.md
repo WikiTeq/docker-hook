@@ -15,19 +15,18 @@
 
 ### 1. Prepare Your Server
 
-#### Download `docker-hook`
-
-No worries - it just downloads a Python script. There won't be anything installed or written elsewhere.
-
-```sh
-$ curl https://raw.githubusercontent.com/schickling/docker-hook/master/docker-hook > /usr/local/bin/docker-hook; chmod +x /usr/local/bin/docker-hook
-```
-
 #### Start `docker-hook`
 
-```sh
-$ docker-hook -t <auth-token> -c <command>
-```
+Arguments for docker-hook can be passed to docker run, e.g.:
+
+    docker run --rm nilbus/docker-hook --help
+
+    docker run -d --name docker-hook -p 8555:8555 nilbus/docker-hook -t <auth-token> -c <command>
+
+If your command needs control over the docker daemon it's running in, give it control
+from within the container by mounting the Docker socket:
+
+    docker run -d --name docker-hook -p 8555:8555 -v /var/run/docker.sock:/var/run/docker.sock nilbus/docker-hook -t <auth-token> -c <command>
 
 ##### Auth-Token
 
@@ -35,7 +34,7 @@ Please choose a secure `auth-token` string or generate one with `$ uuidgen`. Kee
 
 ##### Command
 
-The `command` can be any bash command of your choice. See the following [example](#example). This command will be triggered each time someone makes a HTTP request.
+The `command` can be any bash command of your choice. This command will be triggered each time someone makes an HTTP request with a valid token.
 
 ### 2. Configuration On Docker Hub
 
@@ -47,14 +46,12 @@ Add a webhook like on the following image. `example.com` can be the domain of yo
 
 This example will stop the current running `yourname/app` container, pull the newest version and start a new container.
 
-```sh
-$ docker-hook -t my-super-safe-token -c sh ./deploy.sh
-```
+    docker run -d --name docker-hook -p 8555:8555 -v /var/run/docker.sock:/var/run/docker.sock -v ./deploy.sh:/deploy.sh nilbus/docker-hook -t my-super-safe-token -c sh /deploy.sh
 
 #### `deploy.sh`
 
 ```sh
-#! /bin/bash
+#!/bin/bash
 
 IMAGE="yourname/app"
 docker ps | grep $IMAGE | awk '{print $1}' | xargs docker stop
@@ -70,7 +67,7 @@ $ curl -X POST yourdomain.com:8555/my-super-safe-token
 
 ## How it works
 
-`docker-hook` is written in plain Python and does have **no further dependencies**. It uses `BaseHTTPRequestHandler` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
+`docker-hook` uses `BaseHTTPRequestHandler` to listen for incoming HTTP requests from Docker Hub and then executes the provided [command](#command) if the [authentification](#auth-token) was successful.
 
 ## Caveat
 
