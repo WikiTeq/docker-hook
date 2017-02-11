@@ -26,7 +26,12 @@ Arguments for docker-hook can be passed to docker run, e.g.:
 If your command needs control over the docker daemon it's running in, give it control
 from within the container by mounting the Docker socket:
 
-    docker run -d --name docker-hook -p 8555:8555 -v /var/run/docker.sock:/var/run/docker.sock nilbus/docker-hook -t <auth-token> -c <command>
+    docker run \
+      -d \
+      --name docker-hook \
+      -p 8555:8555 \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      nilbus/docker-hook -t <auth-token> -c <command>
 
 ##### Auth-Token
 
@@ -46,7 +51,13 @@ Add a webhook like on the following image. `example.com` can be the domain of yo
 
 This example will stop the current running `yourname/app` container, pull the newest version and start a new container.
 
-    docker run -d --name docker-hook -p 8555:8555 -v /var/run/docker.sock:/var/run/docker.sock -v ./deploy.sh:/deploy.sh nilbus/docker-hook -t my-super-safe-token -c sh /deploy.sh
+    docker run \
+      -d \
+      --name docker-hook \
+      -p 8555:8555 \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v ./deploy.sh:/deploy.sh \
+      nilbus/docker-hook -t my-super-safe-token -c sh /deploy.sh
 
 #### `deploy.sh`
 
